@@ -1,0 +1,13 @@
+$ pip install nltk
+Requirement already satisfied: nltk in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (3.9.1)
+Requirement already satisfied: click in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from nltk) (8.1.8)
+Requirement already satisfied: joblib in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from nltk) (1.4.2)
+Requirement already satisfied: regex>=2021.8.3 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from nltk) (2024.11.6)
+Requirement already satisfied: tqdm in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from nltk) (4.67.1)
+Requirement already satisfied: colorama in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from click->nltk) (0.4.6)
+
+[notice] A new release of pip is available: 24.3.1 -> 25.1.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
+
+Then in opython script: run    #nltk.download('all') only once.
