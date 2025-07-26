@@ -49,7 +49,8 @@ def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=
     else:
         return sentences
 
-def process_pdf(ip_file):
+root_segments = []
+def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
 
   if not ip_file.endswith(".pdf"):
     ip_file += ".pdf"
@@ -60,42 +61,27 @@ def process_pdf(ip_file):
   all_pages_sentences = []
   cur_page_sentences = []
   with open(ip_file, 'rb') as f:
-    for i, page in tqdm(enumerate(PDFPage.get_pages(f), start=1), desc = 'Reading pages', unit=" pages"):
-        cur_page_text = extract_text(ip_file, page_numbers=[i-1])  # 0-based index
-        cur_page_text_striped = cur_page_text.strip()
 
-        try:
-           segments = tt.tokenize(cur_page_text_striped)
+    page_range = list(range(start_page, end_page))
+    cur_page_text = extract_text(ip_file, page_numbers=page_range)  # 0-based index
+    cur_page_text_striped = cur_page_text.strip()
+    
+    try:
+        segments = tt.tokenize(cur_page_text_striped)
+        root_segments.extend(segments)  # Correct way to accumulate
            
-           # Print results
-           for i, segment in enumerate(segments):
-              print(f"\n--- Segment {i+1} ---\n{segment.strip()}")
-
-        except ValueError:
-           pass
-
-
-
-        #cur_page_sentences = chunk_text_with_overlap(cur_page_text_striped, False) #not tested with True param
-        #all_pages_sentences.extend(cur_page_sentences)
-
-        # Store each chunk with metadata
-        #for chunk in cur_page_sentences:
-        #    all_pages_sentences.append({
-        #        "page_no": i,
-        #        "chapter": "-",
-        #        "text": chunk
-        #    })
-
-        #page_texts.append((i, cur_page_text_striped))
-
-  #return all_pages_sentences
+        # Print results
+        for i, segment in enumerate(segments):
+            print(f"\n--- Segment {i+1} ---\n{segment.strip()}")
+    
+    except ValueError:
+        pass
 
    
 def main():
    #nltk.download('all')
    print("NLTK is working!")
-   process_pdf(INPUT_FILE_NAME)
+   process_pdf_in_page_range(INPUT_FILE_NAME, 3, 5)
    # Initialize the tokenizer
    #tt = TextTilingTokenizer()
 
