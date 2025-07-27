@@ -74,9 +74,6 @@ def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
   
   tt = TextTilingTokenizer()
 
-  #page_texts = []
-  all_pages_sentences = []
-  cur_page_sentences = []
   with open(ip_file, 'rb') as f:
 
     page_range = list(range(start_page, end_page))
@@ -95,15 +92,17 @@ def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
     except ValueError:
         pass
 
+    root_objs = [TreeNode(text.strip()) for text in root_segments]
+    return root_objs
+
 
    
 def main():
    #nltk.download('all')
    print("NLTK is working!")
-   process_pdf_in_page_range(INPUT_FILE_NAME, 3, 5)
+   root_objects = process_pdf_in_page_range(INPUT_FILE_NAME, 3, 5)
 
-   raw_nodes = [TreeNode(text.strip()) for text in root_segments]
-   build_summary_tree(raw_nodes)
+   build_summary_tree(root_objects)
    #leaf_nodes = [TreeNode(content=seg.strip()) for seg in root_segments]
    # Initialize the tokenizer
    #tt = TextTilingTokenizer()
