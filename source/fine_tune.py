@@ -45,11 +45,12 @@ def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=
         return sentences
 
 def summarize(text1):
-    return f"Summary of: {text1[:30]}"
+    return f"Summary of: {text1}"
 
 def build_summary_tree(nodes, branch_factor = 2):
     while len(nodes) > 1:
         new_level = []
+        #print(f"\n new level - total no of nodes = {len(nodes)}")
         for i in range(0, len(nodes), branch_factor):
             children = nodes[i:i + branch_factor]
             if len(children) == 1:
@@ -61,6 +62,7 @@ def build_summary_tree(nodes, branch_factor = 2):
 
             parent = TreeNode(summary)
             parent.children = children
+            #print(f"\n--- Segment {i}, {i + 1} ---\n{parent.content}")
             new_level.append(parent)
 
         nodes = new_level
