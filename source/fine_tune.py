@@ -6,15 +6,10 @@ from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
 from config import INPUT_FILE_NAME
 
-sample_text = """
-The sun is a star located at the center of the solar system. It provides light and heat to Earth and other planets. Solar flares can affect satellites and communication systems on Earth.
-
-Planets revolve around the sun in elliptical orbits. Mercury is the closest planet to the sun, while Neptune is the farthest. Some planets have many moons.
-
-Elephants are the largest land mammals. They are known for their intelligence and social behavior. A herd of elephants is led by a matriarch, typically the oldest female.
-
-Lions are carnivorous animals found in Africa and parts of India. They live in groups called prides. Male lions have a distinctive mane and often defend the pride from intruders.
-"""
+class TreeNode:
+    def __init__(self, content):
+        self.content = content
+        self.children = []  # holds multiple children
 
 def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=1000, overlap_size=200):
     """
@@ -49,6 +44,28 @@ def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=
     else:
         return sentences
 
+def summarize(text1):
+    return f"Summary of: {text1[:30]}"
+
+def build_summary_tree(nodes, branch_factor = 2):
+    while len(nodes) > 1:
+        new_level = []
+        for i in range(0, len(nodes), branch_factor):
+            children = nodes[i:i + branch_factor]
+            if len(children) == 1:
+                new_level.append(children[0])
+                continue
+
+            combined_text = " ".join(child.content for child in children)
+            summary = summarize(combined_text)
+
+            parent = TreeNode(summary)
+            parent.children = children
+            new_level.append(parent)
+
+        nodes = new_level
+    return nodes[0]
+
 root_segments = []
 def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
 
@@ -67,7 +84,8 @@ def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
     cur_page_text_striped = cur_page_text.strip()
     
     try:
-        segments = tt.tokenize(cur_page_text_striped)
+        segments = [s.strip().replace('\n', ' ') for s in tt.tokenize(cur_page_text_striped)]
+        #segments = tt.tokenize(cur_page_text_striped)
         root_segments.extend(segments)  # Correct way to accumulate
            
         # Print results
@@ -77,11 +95,16 @@ def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
     except ValueError:
         pass
 
+
    
 def main():
    #nltk.download('all')
    print("NLTK is working!")
    process_pdf_in_page_range(INPUT_FILE_NAME, 3, 5)
+
+   raw_nodes = [TreeNode(text.strip()) for text in root_segments]
+   build_summary_tree(raw_nodes)
+   #leaf_nodes = [TreeNode(content=seg.strip()) for seg in root_segments]
    # Initialize the tokenizer
    #tt = TextTilingTokenizer()
 
