@@ -10,6 +10,7 @@ class TreeNode:
     def __init__(self, content):
         self.content = content
         self.children = []  # holds multiple children
+        self.qa_dict = {}  # dict with question as key and answer as value
 
 def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=1000, overlap_size=200):
     """
