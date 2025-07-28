@@ -6,6 +6,13 @@ from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
 from config import INPUT_FILE_NAME
 
+import torch
+from transformers import pipeline
+pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-alpha", torch_dtype=torch.bfloat16, device_map="auto")
+
+API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+headers = {"Authorization": f"Bearer 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"}
+
 class TreeNode:
     def __init__(self, content):
         self.content = content
@@ -45,8 +52,28 @@ def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=
     else:
         return sentences
 
-def summarize(text1):
-    return f"Summary of: {text1}"
+def summarize(text):
+    
+    # We use the tokenizer's chat template to format each message - see https://huggingface.co/docs/transformers/main/en/chat_templating
+    messages = [
+    {
+        "role": "system",
+        "content": "You are a friendly chatbot who always responds in the style of a pirate",
+    },
+    {"role": "user", "content": "How many helicopters can a human eat in one sitting?"},
+    ]
+
+    prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
+    print(outputs[0]["generated_text"])
+
+    #prompt = f"Generate 3 question-answer pairs from the following passage:\n{text}"
+    #payload = {"inputs": prompt}
+    #response = requests.post(API_URL, headers=headers, json=payload)
+    # Debug print
+    #print("Status Code:", response.status_code)
+    #print("Raw Text:", response.text)
+    #return response.json()
 
 def build_summary_tree(nodes, branch_factor = 2):
     while len(nodes) > 1:
@@ -63,7 +90,7 @@ def build_summary_tree(nodes, branch_factor = 2):
 
             parent = TreeNode(summary)
             parent.children = children
-            #print(f"\n--- Segment {i}, {i + 1} ---\n{parent.content}")
+            print(f"\n--- Segment {i}, {i + 1} ---\n{parent.content}")
             new_level.append(parent)
 
         nodes = new_level

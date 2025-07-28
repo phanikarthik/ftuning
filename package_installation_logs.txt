@@ -11,3 +11,147 @@ Requirement already satisfied: colorama in c:\users\msi\appdata\local\programs\p
 
 
 Then in opython script: run    #nltk.download('all') only once.
+
+
+$ pip install transformers requests
+Collecting transformers
+  Downloading transformers-4.54.0-py3-none-any.whl.metadata (41 kB)
+Collecting requests
+  Downloading requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+Collecting filelock (from transformers)
+  Using cached filelock-3.18.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting huggingface-hub<1.0,>=0.34.0 (from transformers)
+  Downloading huggingface_hub-0.34.1-py3-none-any.whl.metadata (14 kB)
+Requirement already satisfied: numpy>=1.17 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from transformers) (2.2.4)
+Requirement already satisfied: packaging>=20.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from transformers) (24.2)
+Collecting pyyaml>=5.1 (from transformers)
+  Using cached PyYAML-6.0.2-cp313-cp313-win_amd64.whl.metadata (2.1 kB)
+Requirement already satisfied: regex!=2019.12.17 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from transformers) (2024.11.6)
+Collecting tokenizers<0.22,>=0.21 (from transformers)
+  Downloading tokenizers-0.21.2-cp39-abi3-win_amd64.whl.metadata (6.9 kB)
+Collecting safetensors>=0.4.3 (from transformers)
+  Using cached safetensors-0.5.3-cp38-abi3-win_amd64.whl.metadata (3.9 kB)
+Requirement already satisfied: tqdm>=4.27 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from transformers) (4.67.1)
+Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests) (3.4.1)
+Requirement already satisfied: idna<4,>=2.5 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests) (3.10)
+Collecting urllib3<3,>=1.21.1 (from requests)
+  Downloading urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+Requirement already satisfied: certifi>=2017.4.17 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests) (2025.1.31)
+Collecting fsspec>=2023.5.0 (from huggingface-hub<1.0,>=0.34.0->transformers)
+  Downloading fsspec-2025.7.0-py3-none-any.whl.metadata (12 kB)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface-hub<1.0,>=0.34.0->transformers) (4.12.2)
+Requirement already satisfied: colorama in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from tqdm>=4.27->transformers) (0.4.6)
+Downloading transformers-4.54.0-py3-none-any.whl (11.2 MB)
+   ---------------------------------------- 11.2/11.2 MB 7.6 MB/s eta 0:00:00
+Downloading requests-2.32.4-py3-none-any.whl (64 kB)
+Downloading huggingface_hub-0.34.1-py3-none-any.whl (558 kB)
+   ---------------------------------------- 558.8/558.8 kB 1.9 MB/s eta 0:00:00
+Downloading PyYAML-6.0.2-cp313-cp313-win_amd64.whl (156 kB)
+Using cached safetensors-0.5.3-cp38-abi3-win_amd64.whl (308 kB)
+Downloading tokenizers-0.21.2-cp39-abi3-win_amd64.whl (2.5 MB)
+   ---------------------------------------- 2.5/2.5 MB 6.1 MB/s eta 0:00:00
+Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+Using cached filelock-3.18.0-py3-none-any.whl (16 kB)
+Downloading fsspec-2025.7.0-py3-none-any.whl (199 kB)
+Installing collected packages: urllib3, safetensors, pyyaml, fsspec, filelock, requests, huggingface-hub, tokenizers, transformers
+Successfully installed filelock-3.18.0 fsspec-2025.7.0 huggingface-hub-0.34.1 pyyaml-6.0.2 requests-2.32.4 safetensors-0.5.3 tokenizers-0.21.2 transformers-4.54.0 urllib3-2.5.0
+
+[notice] A new release of pip is available: 24.3.1 -> 25.1.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
+$ pip install torch
+Collecting torch
+  Downloading torch-2.7.1-cp313-cp313-win_amd64.whl.metadata (28 kB)
+Requirement already satisfied: filelock in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch) (3.18.0)
+Requirement already satisfied: typing-extensions>=4.10.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch) (4.12.2)
+Collecting sympy>=1.13.3 (from torch)
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx (from torch)
+  Downloading networkx-3.5-py3-none-any.whl.metadata (6.3 kB)
+Collecting jinja2 (from torch)
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Requirement already satisfied: fsspec in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch) (2025.7.0)
+Collecting setuptools (from torch)
+  Downloading setuptools-80.9.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch)
+  Using cached mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch)
+  Downloading MarkupSafe-3.0.2-cp313-cp313-win_amd64.whl.metadata (4.1 kB)
+Downloading torch-2.7.1-cp313-cp313-win_amd64.whl (216.1 MB)
+   --------------------------------------- 216.1/216.1 MB 10.7 MB/s eta 0:00:00
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+   ---------------------------------------- 6.3/6.3 MB 9.1 MB/s eta 0:00:00
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Downloading networkx-3.5-py3-none-any.whl (2.0 MB)
+   ---------------------------------------- 2.0/2.0 MB 8.3 MB/s eta 0:00:00
+Downloading setuptools-80.9.0-py3-none-any.whl (1.2 MB)
+   ---------------------------------------- 1.2/1.2 MB 5.9 MB/s eta 0:00:00
+Downloading MarkupSafe-3.0.2-cp313-cp313-win_amd64.whl (15 kB)
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ---------------------------------------- 536.2/536.2 kB 3.9 MB/s eta 0:00:00
+Installing collected packages: mpmath, sympy, setuptools, networkx, MarkupSafe, jinja2, torch
+Successfully installed MarkupSafe-3.0.2 jinja2-3.1.6 mpmath-1.3.0 networkx-3.5 setuptools-80.9.0 sympy-1.14.0 torch-2.7.1
+
+[notice] A new release of pip is available: 24.3.1 -> 25.1.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
+
+$ pip install accelerate
+Collecting accelerate
+  Downloading accelerate-1.9.0-py3-none-any.whl.metadata (19 kB)
+Requirement already satisfied: numpy<3.0.0,>=1.17 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from accelerate) (2.2.4)
+Requirement already satisfied: packaging>=20.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from accelerate) (24.2)
+Collecting psutil (from accelerate)
+  Using cached psutil-7.0.0-cp37-abi3-win_amd64.whl.metadata (23 kB)
+Requirement already satisfied: pyyaml in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from accelerate) (6.0.2)
+Requirement already satisfied: torch>=2.0.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from accelerate) (2.7.1)
+Requirement already satisfied: huggingface_hub>=0.21.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from accelerate) (0.34.1)
+Requirement already satisfied: safetensors>=0.4.3 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from accelerate) (0.5.3)
+Requirement already satisfied: filelock in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub>=0.21.0->accelerate) (3.18.0)
+Requirement already satisfied: fsspec>=2023.5.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub>=0.21.0->accelerate) (2025.7.0)
+Requirement already satisfied: requests in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub>=0.21.0->accelerate) (2.32.4)
+Requirement already satisfied: tqdm>=4.42.1 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub>=0.21.0->accelerate) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub>=0.21.0->accelerate) (4.12.2)
+Requirement already satisfied: sympy>=1.13.3 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch>=2.0.0->accelerate) (1.14.0)
+Requirement already satisfied: networkx in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch>=2.0.0->accelerate) (3.5)
+Requirement already satisfied: jinja2 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch>=2.0.0->accelerate) (3.1.6)
+Requirement already satisfied: setuptools in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from torch>=2.0.0->accelerate) (80.9.0)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from sympy>=1.13.3->torch>=2.0.0->accelerate) (1.3.0)
+Requirement already satisfied: colorama in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from tqdm>=4.42.1->huggingface_hub>=0.21.0->accelerate) (0.4.6)
+Requirement already satisfied: MarkupSafe>=2.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from jinja2->torch>=2.0.0->accelerate) (3.0.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (3.4.1)
+Requirement already satisfied: idna<4,>=2.5 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (2025.1.31)
+Downloading accelerate-1.9.0-py3-none-any.whl (367 kB)
+Using cached psutil-7.0.0-cp37-abi3-win_amd64.whl (244 kB)
+Installing collected packages: psutil, accelerate
+Successfully installed accelerate-1.9.0 psutil-7.0.0
+
+[notice] A new release of pip is available: 24.3.1 -> 25.1.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
+$ pip install huggingface_hub[hf_xet]
+Requirement already satisfied: huggingface_hub[hf_xet] in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (0.34.1)
+Requirement already satisfied: filelock in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (3.18.0)
+Requirement already satisfied: fsspec>=2023.5.0 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (2025.7.0)
+Requirement already satisfied: packaging>=20.9 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (24.2)
+Requirement already satisfied: pyyaml>=5.1 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (6.0.2)
+Requirement already satisfied: requests in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (2.32.4)
+Requirement already satisfied: tqdm>=4.42.1 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (4.67.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from huggingface_hub[hf_xet]) (4.12.2)
+Collecting hf-xet<2.0.0,>=1.1.2 (from huggingface_hub[hf_xet])
+  Downloading hf_xet-1.1.5-cp37-abi3-win_amd64.whl.metadata (883 bytes)
+Requirement already satisfied: colorama in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from tqdm>=4.42.1->huggingface_hub[hf_xet]) (0.4.6)
+Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub[hf_xet]) (3.4.1)
+Requirement already satisfied: idna<4,>=2.5 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub[hf_xet]) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub[hf_xet]) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in c:\users\msi\appdata\local\programs\python\python313\lib\site-packages (from requests->huggingface_hub[hf_xet]) (2025.1.31)
+Downloading hf_xet-1.1.5-cp37-abi3-win_amd64.whl (2.7 MB)
+   ---------------------------------------- 2.7/2.7 MB 4.2 MB/s eta 0:00:00
+Installing collected packages: hf-xet
+Successfully installed hf-xet-1.1.5
+
+[notice] A new release of pip is available: 24.3.1 -> 25.1.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
