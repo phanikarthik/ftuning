@@ -155,3 +155,39 @@ Successfully installed hf-xet-1.1.5
 [notice] A new release of pip is available: 24.3.1 -> 25.1.1
 [notice] To update, run: python.exe -m pip install --upgrade pip
 
+ng/ftuningCollecting pdfminer.six
+  Downloading pdfminer_six-20250506-py3-none-any.whl.metadata (4.2 kB)
+Requirement already satisfied: charset-normalizer>=2.0.0 in /usr/local/lib/python3.11/dist-packages (from pdfminer.six) (3.4.2)
+Requirement already satisfied: cryptography>=36.0.0 in /usr/local/lib/python3.11/dist-packages (from pdfminer.six) (43.0.3)
+Requirement already satisfied: cffi>=1.12 in /usr/local/lib/python3.11/dist-packages (from cryptography>=36.0.0->pdfminer.six) (1.17.1)
+Requirement already satisfied: pycparser in /usr/local/lib/python3.11/dist-packages (from cffi>=1.12->cryptography>=36.0.0->pdfminer.six) (2.22)
+Downloading pdfminer_six-20250506-py3-none-any.whl (5.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 61.6 MB/s eta 0:00:00
+Installing collected packages: pdfminer.six
+Successfully installed pdfminer.six-20250506
+/content/phani/ftuning/ftun
+/content/phani/ftuning/ftuning
+/content/phani/ftuning/ftuning
+/content/phani/ftuning/ftuning# pip install ipdb
+Collecting ipdb
+  Downloading ipdb-0.13.13-py3-none-any.whl.metadata (14 kB)
+Requirement already satisfied: ipython>=7.31.1 in /usr/local/lib/python3.11/dist-packages (from ipdb) (7.34.0)
+Requirement already satisfied: decorator in /usr/local/lib/python3.11/dist-packages (from ipdb) (4.4.2)
+Requirement already satisfied: setuptools>=18.5 in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (75.2.0)
+Collecting jedi>=0.16 (from ipython>=7.31.1->ipdb)
+  Downloading jedi-0.19.2-py2.py3-none-any.whl.metadata (22 kB)
+Requirement already satisfied: pickleshare in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (0.7.5)
+Requirement already satisfied: traitlets>=4.2 in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (5.7.1)
+Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (3.0.51)
+Requirement already satisfied: pygments in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (2.19.2)
+Requirement already satisfied: backcall in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (0.2.0)
+Requirement already satisfied: matplotlib-inline in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (0.1.7)
+Requirement already satisfied: pexpect>4.3 in /usr/local/lib/python3.11/dist-packages (from ipython>=7.31.1->ipdb) (4.9.0)
+Requirement already satisfied: parso<0.9.0,>=0.8.4 in /usr/local/lib/python3.11/dist-packages (from jedi>=0.16->ipython>=7.31.1->ipdb) (0.8.4)
+Requirement already satisfied: ptyprocess>=0.5 in /usr/local/lib/python3.11/dist-packages (from pexpect>4.3->ipython>=7.31.1->ipdb) (0.7.0)
+Requirement already satisfied: wcwidth in /usr/local/lib/python3.11/dist-packages (from prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0->ipython>=7.31.1->ipdb) (0.2.13)
+Downloading ipdb-0.13.13-py3-none-any.whl (12 kB)
+Downloading jedi-0.19.2-py2.py3-none-any.whl (1.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 35.8 MB/s eta 0:00:00
+Installing collected packages: jedi, ipdb
+Successfully installed ipdb-0.13.13 jedi-0.19.2

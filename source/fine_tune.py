@@ -4,11 +4,13 @@ from textblob import TextBlob
 from pdfminer.high_level import extract_text
 from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
-from config import INPUT_FILE_NAME
-
+from config import INPUT_FILE_NAME, QA_GENERATOR_MODEL
+import ollama
 import torch
 from transformers import pipeline
-pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-alpha", torch_dtype=torch.bfloat16, device_map="auto")
+
+
+#pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-alpha", torch_dtype=torch.bfloat16, device_map="auto")
 
 API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
 headers = {"Authorization": f"Bearer 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"}
@@ -63,9 +65,9 @@ def summarize(text):
     {"role": "user", "content": "How many helicopters can a human eat in one sitting?"},
     ]
 
-    prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
-    print(outputs[0]["generated_text"])
+    #prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    #outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
+    #print(outputs[0]["generated_text"])
 
     #prompt = f"Generate 3 question-answer pairs from the following passage:\n{text}"
     #payload = {"inputs": prompt}
@@ -130,6 +132,22 @@ def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
 def main():
    #nltk.download('all')
    print("NLTK is working!")
+
+   context = 'Just as Consciousness is dependent upon Soul and mind for its existence, perception of one’s Identity is dependent on base constituents of the Soul, mind, body and the existence of Consciousness itself. I must reiterate that it is the perception that is dependent upon Consciousness, not the identity itself, for the latter exists on the base factors irrespective of consciousness, only to be perceived by another conscious being if not the unconscious one.'
+   instruction_prompt = f"""
+   Context: {context}"""
+
+   stream = ollama.chat(
+   model=QA_GENERATOR_MODEL,
+   messages=[
+     {'role': 'user', 'content': instruction_prompt},
+   ],
+   stream=True,
+   )
+
+   print('Chatbot response:')
+   for chunk in stream:
+     print(chunk['message']['content'], end='', flush=True)
    root_objects = process_pdf_in_page_range(INPUT_FILE_NAME, 3, 5)
 
    build_summary_tree(root_objects)
