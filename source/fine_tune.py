@@ -8,7 +8,7 @@ from config import INPUT_FILE_NAME, QA_GENERATOR_MODEL, SUMMARIZER_MODEL
 import ollama
 import torch
 from transformers import pipeline
-
+import json
 
 #pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-alpha", torch_dtype=torch.bfloat16, device_map="auto")
 
@@ -66,7 +66,8 @@ def generate_qa_for_node(node):
    stream=False,
    )
 
-   print(stream['message']['content'])
+   #print(stream['message']['content'])
+   safe_append_jsonl(stream['message']['content'])
 
    
 def summarize(text):
@@ -81,7 +82,51 @@ def summarize(text):
    stream=False,
    )
 
-   print(stream['message']['content'])
+   return stream['message']['content']
+   #print(stream['message']['content'])
+
+import json
+
+def safe_append_jsonl(raw_output, filename="qa_results.jsonl", failed_filename="qa_failed.jsonl"):
+    """
+    Append valid JSON to filename, dump invalid entries to failed_filename.
+    """
+    try:
+        # Direct parse attempt
+        if isinstance(raw_output, str):
+            parsed = json.loads(raw_output)
+        else:
+            parsed = raw_output
+
+    except json.JSONDecodeError:
+        print("⚠ JSON decode failed. Attempting cleanup...")
+        cleaned = raw_output.strip()
+
+        # Remove triple backtick code fences with or without json keyword
+        lines = cleaned.splitlines()
+        lines = [
+            line for line in lines
+            if not line.strip().lower().startswith("```")  # removes ``` and ```json etc.
+        ]
+        cleaned = "\n".join(lines).strip()
+
+        # Retry parsing after cleaning
+        try:
+            parsed = json.loads(cleaned)
+        except json.JSONDecodeError as e:
+            print(f"❌ Still not valid JSON. Dumping to {failed_filename}. Error: {e}")
+
+            # Save raw output to failed file for debugging
+            with open(failed_filename, "a", encoding="utf-8") as f:
+                # Store as plain JSON string entry for consistency
+                json.dump({"raw_output": raw_output}, f, ensure_ascii=False)
+                f.write("\n")
+            return  # Skip saving to main file
+
+    # If parsing worked, append to main file
+    with open(filename, "a", encoding="utf-8") as f:
+        f.write(json.dumps(parsed, ensure_ascii=False) + "\n")
+
 
 def build_summary_tree(nodes, branch_factor = 2):
     while len(nodes) > 1:
@@ -95,10 +140,10 @@ def build_summary_tree(nodes, branch_factor = 2):
 
             combined_text = " ".join(child.content for child in children)
             summary = summarize(combined_text)
-
             parent = TreeNode(summary)
+            generate_qa_for_node(parent)
             parent.children = children
-            print(f"\n--- Segment {i}, {i + 1} ---\n{parent.content}")
+            #print(f"\n--- Segment {i}, {i + 1} ---\n{parent.content}")
             new_level.append(parent)
 
         nodes = new_level
@@ -137,23 +182,6 @@ def process_pdf_into_root_chunks(ip_file, start_page = 0, end_page = 1):
    
 def main():
    #nltk.download('all')
-   #print("NLTK is working!")
-
-   #context = 'Just as Consciousness is dependent upon Soul and mind for its existence, perception of one’s Identity is dependent on base constituents of the Soul, mind, body and the existence of Consciousness itself. I must reiterate that it is the perception that is dependent upon Consciousness, not the identity itself, for the latter exists on the base factors irrespective of consciousness, only to be perceived by another conscious being if not the unconscious one.'
-   #instruction_prompt = f"""
-   #Context: {context}"""
-
-   #stream = ollama.chat(
-   #model=QA_GENERATOR_MODEL,
-   #messages=[
-   #  {'role': 'user', 'content': instruction_prompt},
-   #],
-   #stream=True,
-   #)
-
-   #print('Chatbot response:')
-   #for chunk in stream:
-   #  print(chunk['message']['content'], end='', flush=True)
    root_objects = process_pdf_into_root_chunks(INPUT_FILE_NAME, 3, 5)
    
    #for node in root_objects:
