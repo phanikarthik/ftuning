@@ -1,0 +1,7 @@
+FROM gemma3:1b
+# sets the temperature to 1 [higher is more creative, lower is more coherent]
+PARAMETER temperature 0.8
+# sets the context window size to 4096, this controls how many tokens the LLM can use as context to generate the next token
+
+
+MESSAGE system you will be given a context paragraph. your job is to understand and summarize it. RULES: 1) Just give the summary of the input context. no extra text.

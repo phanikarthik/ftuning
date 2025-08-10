@@ -4,7 +4,7 @@ from textblob import TextBlob
 from pdfminer.high_level import extract_text
 from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
-from config import INPUT_FILE_NAME, QA_GENERATOR_MODEL
+from config import INPUT_FILE_NAME, QA_GENERATOR_MODEL, SUMMARIZER_MODEL
 import ollama
 import torch
 from transformers import pipeline
@@ -19,7 +19,7 @@ class TreeNode:
     def __init__(self, content):
         self.content = content
         self.children = []  # holds multiple children
-        self.qa_dict = {}  # dict with question as key and answer as value
+        #self.qa_dict = {}  # dict with question as key and answer as value
 
 def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=1000, overlap_size=200):
     """
@@ -54,28 +54,34 @@ def chunk_text_with_overlap(text_with_newline, doOverlapping = True, chunk_size=
     else:
         return sentences
 
+def generate_qa_for_node(node):
+   instruction_prompt = f"""
+   Context: {node.content}"""
+
+   stream = ollama.chat(
+   model=QA_GENERATOR_MODEL,
+   messages=[
+     {'role': 'user', 'content': instruction_prompt},
+   ],
+   stream=False,
+   )
+
+   print(stream['message']['content'])
+
+   
 def summarize(text):
-    
-    # We use the tokenizer's chat template to format each message - see https://huggingface.co/docs/transformers/main/en/chat_templating
-    messages = [
-    {
-        "role": "system",
-        "content": "You are a friendly chatbot who always responds in the style of a pirate",
-    },
-    {"role": "user", "content": "How many helicopters can a human eat in one sitting?"},
-    ]
+   instruction_prompt = f"""
+   Context: {text}"""
 
-    #prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    #outputs = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
-    #print(outputs[0]["generated_text"])
+   stream = ollama.chat(
+   model=SUMMARIZER_MODEL,
+   messages=[
+     {'role': 'user', 'content': instruction_prompt},
+   ],
+   stream=False,
+   )
 
-    #prompt = f"Generate 3 question-answer pairs from the following passage:\n{text}"
-    #payload = {"inputs": prompt}
-    #response = requests.post(API_URL, headers=headers, json=payload)
-    # Debug print
-    #print("Status Code:", response.status_code)
-    #print("Raw Text:", response.text)
-    #return response.json()
+   print(stream['message']['content'])
 
 def build_summary_tree(nodes, branch_factor = 2):
     while len(nodes) > 1:
@@ -99,7 +105,7 @@ def build_summary_tree(nodes, branch_factor = 2):
     return nodes[0]
 
 root_segments = []
-def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
+def process_pdf_into_root_chunks(ip_file, start_page = 0, end_page = 1):
 
   if not ip_file.endswith(".pdf"):
     ip_file += ".pdf"
@@ -131,24 +137,27 @@ def process_pdf_in_page_range(ip_file, start_page = 0, end_page = 1):
    
 def main():
    #nltk.download('all')
-   print("NLTK is working!")
+   #print("NLTK is working!")
 
-   context = 'Just as Consciousness is dependent upon Soul and mind for its existence, perception of one’s Identity is dependent on base constituents of the Soul, mind, body and the existence of Consciousness itself. I must reiterate that it is the perception that is dependent upon Consciousness, not the identity itself, for the latter exists on the base factors irrespective of consciousness, only to be perceived by another conscious being if not the unconscious one.'
-   instruction_prompt = f"""
-   Context: {context}"""
+   #context = 'Just as Consciousness is dependent upon Soul and mind for its existence, perception of one’s Identity is dependent on base constituents of the Soul, mind, body and the existence of Consciousness itself. I must reiterate that it is the perception that is dependent upon Consciousness, not the identity itself, for the latter exists on the base factors irrespective of consciousness, only to be perceived by another conscious being if not the unconscious one.'
+   #instruction_prompt = f"""
+   #Context: {context}"""
 
-   stream = ollama.chat(
-   model=QA_GENERATOR_MODEL,
-   messages=[
-     {'role': 'user', 'content': instruction_prompt},
-   ],
-   stream=True,
-   )
+   #stream = ollama.chat(
+   #model=QA_GENERATOR_MODEL,
+   #messages=[
+   #  {'role': 'user', 'content': instruction_prompt},
+   #],
+   #stream=True,
+   #)
 
-   print('Chatbot response:')
-   for chunk in stream:
-     print(chunk['message']['content'], end='', flush=True)
-   root_objects = process_pdf_in_page_range(INPUT_FILE_NAME, 3, 5)
+   #print('Chatbot response:')
+   #for chunk in stream:
+   #  print(chunk['message']['content'], end='', flush=True)
+   root_objects = process_pdf_into_root_chunks(INPUT_FILE_NAME, 3, 5)
+   
+   #for node in root_objects:
+   #    generate_qa_for_node(node)
 
    build_summary_tree(root_objects)
    #leaf_nodes = [TreeNode(content=seg.strip()) for seg in root_segments]

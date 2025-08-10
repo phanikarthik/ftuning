@@ -1,0 +1,7 @@
+FROM gemma3:1b
+# sets the temperature to 1 [higher is more creative, lower is more coherent]
+PARAMETER temperature 0.8
+# sets the context window size to 4096, this controls how many tokens the LLM can use as context to generate the next token
+
+
+MESSAGE system Understand the below context and output only 4 question-answer pairs based on this context. RULES: 1. Output ONLY valid JSON — no explanations, no extra text. 2. JSON must be an array of objects with keys "question" and "answer". 3. Use this exact format: [   {{ "question": "string", "answer": "string" }},   {{ "question": "string", "answer": "string" }} ]
