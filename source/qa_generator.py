@@ -4,7 +4,7 @@ from textblob import TextBlob
 from pdfminer.high_level import extract_text
 from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
-from config import INPUT_FILE_NAME, QA_GENERATOR_MODEL, SUMMARIZER_MODEL
+from config import QA_GENERATOR_MODEL, SUMMARIZER_MODEL
 import ollama
 import torch
 from transformers import pipeline
@@ -182,26 +182,8 @@ def process_pdf_into_root_chunks(ip_file, start_page = 0, end_page = 1):
     root_objs = [TreeNode(text.strip()) for text in root_segments]
     return root_objs
 
+def generate_qa_pairs(doc_name, page_from, page_to):
+    root_objects = process_pdf_into_root_chunks(doc_name, page_from, page_to)
+    build_summary_tree(root_objects)
 
-   
-def main():
-   #nltk.download('all')
-   root_objects = process_pdf_into_root_chunks(INPUT_FILE_NAME, 3, 5)
-   
-   #for node in root_objects:
-   #    generate_qa_for_node(node)
 
-   build_summary_tree(root_objects)
-   #leaf_nodes = [TreeNode(content=seg.strip()) for seg in root_segments]
-   # Initialize the tokenizer
-   #tt = TextTilingTokenizer()
-
-   # Apply the tokenizer
-   #segments = tt.tokenize(sample_text)
-
-   # Print results
-   #for i, segment in enumerate(segments):
-   #  print(f"\n--- Segment {i+1} ---\n{segment.strip()}")
-
-if __name__ == "__main__":
-    main()
