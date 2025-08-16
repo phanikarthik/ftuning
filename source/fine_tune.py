@@ -89,43 +89,49 @@ import json
 
 def safe_append_jsonl(raw_output, filename="qa_results.jsonl", failed_filename="qa_failed.jsonl"):
     """
-    Append valid JSON to filename, dump invalid entries to failed_filename.
+    Append valid JSON objects (not arrays) to filename.
+    If output is invalid JSON, dump raw content to failed_filename.
     """
     try:
-        # Direct parse attempt
+        # Parse output (string → Python)
         if isinstance(raw_output, str):
             parsed = json.loads(raw_output)
         else:
             parsed = raw_output
 
+        # If model wrapped output in a list, flatten it
+        if isinstance(parsed, list):
+            entries = parsed
+        else:
+            entries = [parsed]
+
     except json.JSONDecodeError:
         print("⚠ JSON decode failed. Attempting cleanup...")
         cleaned = raw_output.strip()
 
-        # Remove triple backtick code fences with or without json keyword
+        # Remove triple backtick code fences (``` / ```json etc.)
         lines = cleaned.splitlines()
         lines = [
             line for line in lines
-            if not line.strip().lower().startswith("```")  # removes ``` and ```json etc.
+            if not line.strip().lower().startswith("```")
         ]
         cleaned = "\n".join(lines).strip()
 
-        # Retry parsing after cleaning
         try:
             parsed = json.loads(cleaned)
+            entries = parsed if isinstance(parsed, list) else [parsed]
         except json.JSONDecodeError as e:
             print(f"❌ Still not valid JSON. Dumping to {failed_filename}. Error: {e}")
-
-            # Save raw output to failed file for debugging
             with open(failed_filename, "a", encoding="utf-8") as f:
-                # Store as plain JSON string entry for consistency
                 json.dump({"raw_output": raw_output}, f, ensure_ascii=False)
                 f.write("\n")
-            return  # Skip saving to main file
+            return
 
-    # If parsing worked, append to main file
+    # ✅ Append each entry as its own JSONL line
     with open(filename, "a", encoding="utf-8") as f:
-        f.write(json.dumps(parsed, ensure_ascii=False) + "\n")
+        for entry in entries:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
 
 
 def build_summary_tree(nodes, branch_factor = 2):
