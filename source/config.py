@@ -4,3 +4,4 @@ SUMMARIZER_MODEL = 'gemma_summer:latest'
 #------------------------------------------------------------
 
 INPUT_FILE_NAME = 'essay5.pdf'
+STAGE1_OUTPUT = 'aplaca_op.jsonl'

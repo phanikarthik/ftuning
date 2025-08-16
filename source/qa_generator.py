@@ -10,6 +10,8 @@ import torch
 from transformers import pipeline
 import json
 
+RAW_JSONL_OUTPUT = 'qa_results.jsonl'
+
 #pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-alpha", torch_dtype=torch.bfloat16, device_map="auto")
 
 API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
@@ -67,7 +69,7 @@ def generate_qa_for_node(node):
    )
 
    #print(stream['message']['content'])
-   safe_append_jsonl(stream['message']['content'])
+   safe_append_jsonl(stream['message']['content'], RAW_JSONL_OUTPUT)
 
    
 def summarize(text):
@@ -182,8 +184,28 @@ def process_pdf_into_root_chunks(ip_file, start_page = 0, end_page = 1):
     root_objs = [TreeNode(text.strip()) for text in root_segments]
     return root_objs
 
-def generate_qa_pairs(doc_name, page_from, page_to):
-    root_objects = process_pdf_into_root_chunks(doc_name, page_from, page_to)
+
+def convert_to_alpaca(input_file="qa_results.jsonl", output_file="qa_results_alpaca.jsonl"):
+    with open(input_file, "r", encoding="utf-8") as fin, \
+         open(output_file, "w", encoding="utf-8") as fout:
+
+        for line in fin:
+            try:
+                qa = json.loads(line)
+                alpaca_entry = {
+                    "instruction": qa["question"],  # question directly as instruction
+                    "input": "",                    # input left empty
+                    "output": qa["answer"]          # answer stays as output
+                }
+                fout.write(json.dumps(alpaca_entry, ensure_ascii=False) + "\n")
+            except Exception as e:
+                print(f"Skipping line due to error: {e}")
+
+    print(f"✅ Converted file written to {output_file}")
+
+def generate_qa_pairs(ip_doc_name, page_from, page_to, op_aplaca_doc_name):
+    root_objects = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to)
     build_summary_tree(root_objects)
+    convert_to_alpaca(RAW_JSONL_OUTPUT, op_aplaca_doc_name)
 
 
