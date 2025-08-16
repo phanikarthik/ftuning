@@ -85,8 +85,6 @@ def summarize(text):
    return stream['message']['content']
    #print(stream['message']['content'])
 
-import json
-
 def safe_append_jsonl(raw_output, filename="qa_results.jsonl", failed_filename="qa_failed.jsonl"):
     """
     Append valid JSON objects (not arrays) to filename.
