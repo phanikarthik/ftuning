@@ -9,6 +9,10 @@ import ollama
 import torch
 from transformers import pipeline
 import json
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.high_level import extract_text
 
 RAW_JSONL_OUTPUT = 'qa_results.jsonl'
 
@@ -106,7 +110,7 @@ def safe_append_jsonl(raw_output, filename="qa_results.jsonl", failed_filename="
             entries = [parsed]
 
     except json.JSONDecodeError:
-        print("⚠ JSON decode failed. Attempting cleanup...")
+        tqdm.write("⚠ JSON decode failed. Attempting cleanup...")
         cleaned = raw_output.strip()
 
         # Remove triple backtick code fences (``` / ```json etc.)
@@ -121,7 +125,7 @@ def safe_append_jsonl(raw_output, filename="qa_results.jsonl", failed_filename="
             parsed = json.loads(cleaned)
             entries = parsed if isinstance(parsed, list) else [parsed]
         except json.JSONDecodeError as e:
-            print(f"❌ Still not valid JSON. Dumping to {failed_filename}. Error: {e}")
+            tqdm.write(f"❌ Still not valid JSON. Dumping to {failed_filename}. Error: {e}")
             with open(failed_filename, "a", encoding="utf-8") as f:
                 json.dump({"raw_output": raw_output}, f, ensure_ascii=False)
                 f.write("\n")
@@ -138,7 +142,7 @@ def build_summary_tree(nodes, branch_factor = 2):
     while len(nodes) > 1:
         new_level = []
         #print(f"\n new level - total no of nodes = {len(nodes)}")
-        for i in range(0, len(nodes), branch_factor):
+        for i in tqdm(range(0, len(nodes), branch_factor), desc="Processing text chunks"):
             children = nodes[i:i + branch_factor]
             if len(children) == 1:
                 new_level.append(children[0])
@@ -155,31 +159,34 @@ def build_summary_tree(nodes, branch_factor = 2):
         nodes = new_level
     return nodes[0]
 
-root_segments = []
-def process_pdf_into_root_chunks(ip_file, start_page = 0, end_page = 1):
+def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None):
+    if not ip_file.endswith(".pdf"):
+        ip_file += ".pdf"
 
-  if not ip_file.endswith(".pdf"):
-    ip_file += ".pdf"
-  
-  tt = TextTilingTokenizer()
+    tt = TextTilingTokenizer()
+    root_segments = []
 
-  with open(ip_file, 'rb') as f:
+    # If end_page not given, process till last page
+    if end_page is None:
+        with open(ip_file, 'rb') as f:
+            parser = PDFParser(f)
+            doc = PDFDocument(parser)
+            total_pages = sum(1 for _ in PDFPage.create_pages(doc))
+            end_page = total_pages
 
-    page_range = list(range(start_page, end_page))
-    cur_page_text = extract_text(ip_file, page_numbers=page_range)  # 0-based index
-    cur_page_text_striped = cur_page_text.strip()
-    
-    try:
-        segments = [s.strip().replace('\n', ' ') for s in tt.tokenize(cur_page_text_striped)]
-        #segments = tt.tokenize(cur_page_text_striped)
-        root_segments.extend(segments)  # Correct way to accumulate
-           
-        # Print results
-        for i, segment in enumerate(segments):
-            print(f"\n--- Segment {i+1} ---\n{segment.strip()}")
-    
-    except ValueError:
-        pass
+    for page in tqdm(range(start_page, end_page), desc="Processing PDF pages"):  # process one page at a time
+        cur_page_text = extract_text(ip_file, page_numbers=[page])
+        cur_page_text_striped = cur_page_text.strip()
+
+        if not cur_page_text_striped:
+            continue
+
+        try:
+            segments = [s.strip().replace('\n', ' ') for s in tt.tokenize(cur_page_text_striped)]
+            root_segments.extend(segments)
+            tqdm.write(f"[Page {page+1}] Segments: {len(segments)}")
+        except ValueError:
+            tqdm.write(f"[Page {page+1}] skipped.")
 
     root_objs = [TreeNode(text.strip()) for text in root_segments]
     return root_objs
