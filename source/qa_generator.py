@@ -110,7 +110,7 @@ def safe_append_jsonl(raw_output, filename="qa_results.jsonl", failed_filename="
             entries = [parsed]
 
     except json.JSONDecodeError:
-        tqdm.write("⚠ JSON decode failed. Attempting cleanup...")
+        tqdm.write("Attempting allignment of model output to JSON ...")
         cleaned = raw_output.strip()
 
         # Remove triple backtick code fences (``` / ```json etc.)
