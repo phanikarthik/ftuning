@@ -4,7 +4,7 @@ from textblob import TextBlob
 from pdfminer.high_level import extract_text
 from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
-from config import QA_GENERATOR_MODEL, SUMMARIZER_MODEL
+from config import QA_GENERATOR_MODEL, SUMMARIZER_MODEL, DEBUG_OP_FILE_OF_SEGMENTS
 import ollama
 import torch
 from transformers import pipeline
@@ -159,7 +159,7 @@ def build_summary_tree(nodes, branch_factor = 2):
         nodes = new_level
     return nodes[0]
 
-def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1):
+def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1, segments_file=None):
     if not ip_file.endswith(".pdf"):
         ip_file += ".pdf"
 
@@ -193,6 +193,13 @@ def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1):
         except ValueError:
             tqdm.write(f"[Pages {batch_start+1}-{batch_end}] skipped.")
 
+        # Write to file if requested
+    if segments_file:
+        with open(segments_file, "w", encoding="utf-8") as f:
+            for i, seg in enumerate(root_segments, 1):
+                f.write(f"[Segment {i}] {seg}\n\n")
+        print(f"\n✅ Segments written to {segments_file}")
+
     root_objs = [TreeNode(text.strip()) for text in root_segments]
     return root_objs
 
@@ -216,7 +223,7 @@ def convert_to_alpaca(input_file="qa_results.jsonl", output_file="qa_results_alp
     print(f"✅ Converted file written to {output_file}")
 
 def generate_qa_pairs(ip_doc_name, page_from, page_to, op_aplaca_doc_name):
-    root_objects = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to, 5)
+    root_objects = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to, 5, DEBUG_OP_FILE_OF_SEGMENTS)
     build_summary_tree(root_objects)
     convert_to_alpaca(RAW_JSONL_OUTPUT, op_aplaca_doc_name)
 
