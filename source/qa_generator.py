@@ -159,7 +159,7 @@ def build_summary_tree(nodes, branch_factor = 2):
         nodes = new_level
     return nodes[0]
 
-def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None):
+def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1):
     if not ip_file.endswith(".pdf"):
         ip_file += ".pdf"
 
@@ -174,8 +174,13 @@ def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None):
             total_pages = sum(1 for _ in PDFPage.create_pages(doc))
             end_page = total_pages
 
-    for page in tqdm(range(start_page, end_page), desc="Processing PDF pages"):  # process one page at a time
-        cur_page_text = extract_text(ip_file, page_numbers=[page])
+    # Process in batches
+    for batch_start in tqdm(range(start_page, end_page, batch), desc="Processing PDF pages in batches"):
+        batch_end = min(batch_start + batch, end_page)
+        page_range = list(range(batch_start, batch_end))
+
+        # Extract text for the batch of pages
+        cur_page_text = extract_text(ip_file, page_numbers=page_range)
         cur_page_text_striped = cur_page_text.strip()
 
         if not cur_page_text_striped:
@@ -184,9 +189,9 @@ def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None):
         try:
             segments = [s.strip().replace('\n', ' ') for s in tt.tokenize(cur_page_text_striped)]
             root_segments.extend(segments)
-            tqdm.write(f"[Page {page+1}] Segments: {len(segments)}")
+            tqdm.write(f"[Pages {batch_start+1}-{batch_end}] Segments: {len(segments)}")
         except ValueError:
-            tqdm.write(f"[Page {page+1}] skipped.")
+            tqdm.write(f"[Pages {batch_start+1}-{batch_end}] skipped.")
 
     root_objs = [TreeNode(text.strip()) for text in root_segments]
     return root_objs
@@ -211,7 +216,7 @@ def convert_to_alpaca(input_file="qa_results.jsonl", output_file="qa_results_alp
     print(f"✅ Converted file written to {output_file}")
 
 def generate_qa_pairs(ip_doc_name, page_from, page_to, op_aplaca_doc_name):
-    root_objects = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to)
+    root_objects = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to, 5)
     build_summary_tree(root_objects)
     convert_to_alpaca(RAW_JSONL_OUTPUT, op_aplaca_doc_name)
 
