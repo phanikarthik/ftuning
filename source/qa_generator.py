@@ -142,7 +142,7 @@ def build_summary_tree(nodes, branch_factor = 2):
     while len(nodes) > 1:
         new_level = []
         #print(f"\n new level - total no of nodes = {len(nodes)}")
-        for i in tqdm(range(0, len(nodes), branch_factor), desc="Processing text chunks"):
+        for i in tqdm(range(0, len(nodes), branch_factor), desc="Generating QA pairs on text chunks"):
             children = nodes[i:i + branch_factor]
             if len(children) == 1:
                 new_level.append(children[0])
@@ -159,7 +159,7 @@ def build_summary_tree(nodes, branch_factor = 2):
         nodes = new_level
     return nodes[0]
 
-def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1, segments_file=None):
+def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1, segments_file=None, feed_full_page = False):
     if not ip_file.endswith(".pdf"):
         ip_file += ".pdf"
 
@@ -187,7 +187,11 @@ def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1, 
             continue
 
         try:
-            segments = [s.strip().replace('\n', ' ') for s in tt.tokenize(cur_page_text_striped)]
+            if(feed_full_page is False):
+                segments = [s.strip().replace('\n', ' ') for s in tt.tokenize(cur_page_text_striped)]
+            else:
+                segments = [cur_page_text_striped.replace('\n', ' ')]
+
             root_segments.extend(segments)
             tqdm.write(f"[Pages {batch_start+1}-{batch_end}] Segments: {len(segments)}")
         except ValueError:
@@ -198,10 +202,14 @@ def process_pdf_into_root_chunks(ip_file, start_page=0, end_page=None, batch=1, 
         with open(segments_file, "w", encoding="utf-8") as f:
             for i, seg in enumerate(root_segments, 1):
                 f.write(f"[Segment {i}] {seg}\n\n")
-        print(f"\n✅ Segments written to {segments_file}")
+        print(f"\n Segments written to {segments_file}")
 
     root_objs = [TreeNode(text.strip()) for text in root_segments]
     return root_objs
+
+def generate_qa_pairs_per_page(page_objects):
+    for i in tqdm(range(0, len(page_objects)), desc="Generating QA pairs on every page", unit="page"):
+        generate_qa_for_node(page_objects[i])
 
 
 def convert_to_alpaca(input_file="qa_results.jsonl", output_file="qa_results_alpaca.jsonl"):
@@ -220,11 +228,33 @@ def convert_to_alpaca(input_file="qa_results.jsonl", output_file="qa_results_alp
             except Exception as e:
                 print(f"Skipping line due to error: {e}")
 
-    print(f"✅ Converted file written to {output_file}")
+    print(f" Converted file written to {output_file}")
 
 def generate_qa_pairs(ip_doc_name, page_from, page_to, op_aplaca_doc_name):
+    """
+    First, let us devide the pdf file into chunks using
+    tokenize method, the base chunks are called as root_objects.
+    Using these root objects, we will build a binary or x'ary tree,
+    asking the model to generate the qa pairs at every level.
+    Here, I have seen the model generate short qa pairs.
+    """
+    print(f" Step - 1 of pdf process starting ...")
     root_objects = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to, 5, DEBUG_OP_FILE_OF_SEGMENTS)
     build_summary_tree(root_objects)
+
+    """
+    Next, I process the pdf and ask the model to generate (4) qa pairs
+    on a single page content at a time. Here the volume of input makes
+    the model to generate bit more insightfull qa pairs. It may not
+    limit itself to only 4 qa pairs, but thats okay I suppose.
+    """
+    print(f" Step - 2 of pdf process starting ...")
+    page_content_objs = process_pdf_into_root_chunks(ip_doc_name, page_from, page_to, 1, DEBUG_OP_FILE_OF_SEGMENTS, True)
+    generate_qa_pairs_per_page(page_content_objs)
+
+    print(f" Step - 3: converting to alpaca format")
     convert_to_alpaca(RAW_JSONL_OUTPUT, op_aplaca_doc_name)
+
+    print(f" ---------- SUCCESS ---------")
 
 

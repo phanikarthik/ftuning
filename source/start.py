@@ -11,13 +11,17 @@ def sanitize_arg(arg, default=0):
 
 def main():
    #nltk.download('all')
+   #generate_qa_pairs(INPUT_FILE_NAME, 3, 15, STAGE1_OUTPUT)
+
    if len(sys.argv) < 3:
       print("Usage: python script.py <start_page> <end_page>")
       sys.exit(1)
 
    start_page = sanitize_arg(sys.argv[1], default=0)
    end_page = sanitize_arg(sys.argv[2], default=None)
+
    generate_qa_pairs(INPUT_FILE_NAME, start_page, end_page, STAGE1_OUTPUT)
+
 
 
 if __name__ == "__main__":
