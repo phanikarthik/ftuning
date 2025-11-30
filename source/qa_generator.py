@@ -4,7 +4,7 @@ from textblob import TextBlob
 from pdfminer.high_level import extract_text
 from pdfminer.pdfpage import PDFPage
 from tqdm import tqdm
-from config import QA_GENERATOR_MODEL, SUMMARIZER_MODEL, DEBUG_OP_FILE_OF_SEGMENTS
+from config import QA_GENERATOR_MODEL, SUMMARIZER_MODEL, DEBUG_OP_FILE_OF_SEGMENTS, RAW_JSONL_OUTPUT, RAW_JSONL_FAILED_BIN
 import ollama
 import torch
 from transformers import pipeline
@@ -14,7 +14,6 @@ from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
 from pdfminer.high_level import extract_text
 
-RAW_JSONL_OUTPUT = 'qa_results.jsonl'
 
 #pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-alpha", torch_dtype=torch.bfloat16, device_map="auto")
 
@@ -73,7 +72,7 @@ def generate_qa_for_node(node):
    )
 
    #print(stream['message']['content'])
-   safe_append_jsonl(stream['message']['content'], RAW_JSONL_OUTPUT)
+   safe_append_jsonl(stream['message']['content'], RAW_JSONL_OUTPUT, RAW_JSONL_FAILED_BIN)
 
    
 def summarize(text):
